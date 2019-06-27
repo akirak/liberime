@@ -388,7 +388,7 @@ get_config(emacs_env* env, ptrdiff_t nargs, emacs_value args[], void* data) {
   }
 
   RimeConfig *config = malloc(sizeof(RimeConfig));
-  rime->api->config_open(config_id, config);
+  rime->api->user_config_open(config_id, config);
 
   bool success = false;
   emacs_value result;
@@ -411,6 +411,7 @@ get_config(emacs_env* env, ptrdiff_t nargs, emacs_value args[], void* data) {
     result = env->make_string(env, string, strnlen(string, CONFIG_MAXSTRLEN));
   }
 
+  rime->api->config_close(config);
   if (!success) {
     em_signal_rimeerr(env, 2, "failed to get config");
     return em_nil;
@@ -440,7 +441,7 @@ set_config(emacs_env* env, ptrdiff_t nargs, emacs_value args[], void* data) {
   }
 
   RimeConfig *config = malloc(sizeof(RimeConfig));
-  rime->api->config_open(config_id, config);
+  rime->api->user_config_open(config_id, config);
 
   if (strcmp("int", config_type) == 0) {
     int number = env->extract_integer(env, value);
@@ -456,6 +457,7 @@ set_config(emacs_env* env, ptrdiff_t nargs, emacs_value args[], void* data) {
     rime->api->config_set_string(config, config_key, string);
   }
 
+  rime->api->config_close(config);
   return em_t;
 }
 
